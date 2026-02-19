@@ -1,0 +1,274 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MC Flow-IA</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+body{
+    font-family: 'Inter', sans-serif;
+    background:linear-gradient(180deg,#f8fafc,#eef2f7);
+}
+
+.navbar{
+    padding:18px 0;
+}
+
+.nav-link{
+    margin:0 12px;
+    font-weight:500;
+    color:#333;
+    transition:0.3s;
+}
+
+.nav-link:hover{
+    color:#00b4c4;
+}
+
+.btn-header{
+    background:linear-gradient(90deg,#00b4c4,#0098a5);
+    color:white;
+    border-radius:30px;
+    padding:8px 20px;
+    border:none;
+    transition:0.3s;
+}
+
+.btn-header:hover{
+    transform:translateY(-2px);
+    box-shadow:0 10px 20px rgba(0,180,196,0.3);
+    color:white;
+}
+
+/* HERO */
+
+.hero{
+    padding:135px 0;
+}
+
+.hero h1{
+    font-size:3.2rem;
+    font-weight:800;
+    line-height:1.2;
+}
+
+.highlight{
+    color:#00b4c4;
+}
+
+.highlight-bg{
+    background:#ffc700;
+    padding:4px 10px;
+    border-radius:8px;
+    font-weight:600;
+}
+
+.btn-main{
+    background:linear-gradient(90deg,#00b4c4,#0098a5);
+    border:none;
+    color:white;
+    border-radius:30px;
+    padding:12px 30px;
+    box-shadow:0 10px 20px rgba(0,180,196,0.25);
+    transition:0.3s;
+}
+
+.btn-main:hover{
+    transform:translateY(-3px);
+    box-shadow:0 15px 30px rgba(0,180,196,0.35);
+    color:white;
+}
+
+/* CARD DROITE */
+
+.graph-card{
+    background:white;
+    border-radius:25px;
+    padding:50px;
+    box-shadow:0 30px 60px rgba(0,0,0,0.08);
+    position:relative;
+    transition:0.4s;
+}
+
+.graph-card:hover{
+    transform:translateY(-5px);
+}
+
+.graph-card h2{
+    font-size:3.5rem;
+    font-weight:800;
+}
+
+.badge-floating{
+    position:absolute;
+    background:white;
+    padding:12px 18px;
+    border-radius:20px;
+    box-shadow:0 15px 30px rgba(0,0,0,0.1);
+    font-size:0.85rem;
+    font-weight:500;
+}
+
+.badge-top{
+    top:-20px;
+    right:-20px;
+}
+
+.badge-bottom{
+    bottom:-20px;
+    right:20px;
+}
+
+/* Animation SVG */
+
+.curve{
+    stroke-dasharray:300;
+    stroke-dashoffset:300;
+    animation:draw 2s ease forwards;
+}
+
+@keyframes draw{
+    to{
+        stroke-dashoffset:0;
+    }
+}
+
+@media(max-width:991px){
+    .hero{
+        text-align:center;
+    }
+
+    .graph-card{
+        margin-top:40px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+
+<nav class="navbar navbar-expand-lg bg-white shadow-sm fixed-top">
+  <div class="container">
+
+    <a class="navbar-brand" href="{% url 'landing_page' %}">
+        <img src="{% static 'dashboard/images/MC FLOW-IA LOGO.png' %}" height="40">
+    </a>
+
+    <div class="collapse navbar-collapse justify-content-center">
+      <ul class="navbar-nav">
+        <li class="nav-item"><a class="nav-link" href="#">Services</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Cas d’usage</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">À propos</a></li>
+      </ul>
+    </div>
+
+    <div class="d-flex align-items-center">
+
+        {% if user.is_authenticated %}
+            <div class="dropdown">
+                <button class="btn btn-header dropdown-toggle me-3" data-bs-toggle="dropdown">
+                    👤 {{ user.username }}
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <a class="dropdown-item" href="{% url 'dashboard' %}">
+                            Mon dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="{% url 'logout' %}">
+                            Déconnexion
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        {% else %}
+            <a href="{% url 'login' %}" class="btn btn-header me-3">
+                Connexion
+            </a>
+        {% endif %}
+
+    </div>
+
+  </div>
+</nav>
+
+<!-- HERO -->
+
+<div class="container hero">
+<div class="row align-items-center">
+
+<div class="col-lg-6 mb-5 mb-lg-0">
+
+    <small class="text-muted">Agence IA — International Francophone</small>
+
+    <h1 class="mt-3">
+        Automatisez vos tâches,
+        <span class="highlight">boostez</span> vos
+        <br>
+        <span class="highlight-bg">résultats</span>.
+    </h1>
+
+    <p class="mt-4 text-muted">
+        MC Flow-IA transforme vos processus complexes en agents intelligents
+        opérationnels avec un impact mesurable dès les premières semaines.
+    </p>
+
+    <div class="mt-4">
+        <a href="#" class="btn btn-main me-3">Discuter de mon projet</a>
+        <a href="#" class="btn btn-outline-secondary rounded-pill px-4">Nos services</a>
+    </div>
+
+</div>
+
+<!-- CARD DROITE RESTAURÉE -->
+
+<div class="col-lg-6">
+
+    <div class="graph-card">
+
+        <small class="text-muted">SYSTÈME ACTIF — AUTOMATISATIONS</small>
+        <h2 class="mt-2">+124%</h2>
+        <p class="text-muted">Efficacité opérationnelle ce mois</p>
+
+        <svg viewBox="0 0 100 50" width="100%" height="150">
+            <defs>
+                <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#00b4c4"/>
+                    <stop offset="100%" stop-color="#ffc700"/>
+                </linearGradient>
+            </defs>
+
+            <path d="M0 35 Q 25 35, 40 20 T 80 10 T 100 5"
+                  fill="none"
+                  stroke="url(#grad)"
+                  stroke-width="4"
+                  stroke-linecap="round"
+                  class="curve"/>
+        </svg>
+
+        <div class="badge-floating badge-top">
+            +12 Leads qualifiés
+        </div>
+
+        <div class="badge-floating badge-bottom">
+            RDV Confirmé
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

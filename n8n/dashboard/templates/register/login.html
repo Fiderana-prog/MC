@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: #0a0f1a; color: white; min-height: 100vh; }
+        .container { display: flex; min-height: 100vh; }
+        .left-side {
+            flex: 1;
+            background: linear-gradient(rgba(10,15,26,0.4), rgba(10,15,26,0.6)),
+                        url('https://thumbs.dreamstime.com/b/blue-dark-marble-abstract-hand-painted-background-neon-liquid-acrylic-painting-canvas-contemporary-art-172767488.jpg') center/cover no-repeat;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px; text-align: center;
+        }
+        .left-side h1 { font-size: 3.2rem; margin-bottom: 1rem; font-weight: 700; }
+        .left-side p { font-size: 1.3rem; opacity: 0.9; max-width: 420px; }
+        .right-side { flex: 1; background: white; color: #111; display: flex; flex-direction: column; justify-content: center; padding: 60px 80px; max-width: 550px; }
+        h2 { font-size: 2.1rem; margin-bottom: 1.8rem; font-weight: 600; }
+        .form-group { margin-bottom: 1.4rem; }
+        label { display: block; margin-bottom: 0.5rem; font-size: 0.95rem; font-weight: 500; color: #444; }
+        input[type="text"], input[type="password"] { width: 100%; padding: 14px 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; transition: border-color 0.2s; }
+        input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.15); }
+        .form-errors { background: #fee2e2; color: #991b1b; padding: 12px; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.95rem; }
+        .forgot-password { text-align: right; margin-bottom: 1.5rem; }
+        .forgot-password a { color: #3b82f6; text-decoration: none; font-size: 0.95rem; }
+        .forgot-password a:hover { text-decoration: underline; }
+        .btn-primary { width: 100%; padding: 15px; background: #111; color: white; border: none; border-radius: 10px; font-size: 1.05rem; font-weight: 600; cursor: pointer; transition: background 0.25s; margin: 1.2rem 0 1rem; }
+        .btn-primary:hover { background: #222; }
+        .divider { display: flex; align-items: center; margin: 1.8rem 0; color: #888; font-size: 0.9rem; }
+        .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: #ddd; }
+        .divider span { padding: 0 16px; }
+        .btn-social { width: 100%; padding: 14px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; background: white; font-size: 1rem; color: #111; text-align: center; cursor: not-allowed; opacity: 0.6; }
+        .signup-link { text-align: center; margin-top: 2rem; color: #555; font-size: 0.95rem; }
+        .signup-link a { color: #3b82f6; text-decoration: none; font-weight: 500; }
+        .signup-link a:hover { text-decoration: underline; }
+        @media (max-width: 900px) { .container { flex-direction: column; } .left-side { padding: 80px 30px; } .right-side { padding: 40px 30px; max-width: 100%; } }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="left-side">
+        <h1>Welcome back!</h1>
+        <p>Connectez-vous pour partager votre artwork<br>et découvrir de nouveaux projets !</p>
+    </div>
+
+    <div class="right-side">
+        <h2>Connexion</h2>
+
+        {% if form.errors %}
+            <div class="form-errors">
+                {% if form.non_field_errors %}
+                    {{ form.non_field_errors }}
+                {% else %}
+                    <p>Nom d'utilisateur ou mot de passe incorrect.</p>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <form method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="id_username">Nom d'utilisateur</label>
+                {{ form.username }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_password">Mot de passe</label>
+                {{ form.password }}
+            </div>
+
+            <div class="forgot-password">
+                <a href="">Mot de passe oublié ?</a>
+            </div>
+
+            <button type="submit" class="btn-primary">Se connecter</button>
+
+            <div class="divider"><span>ou</span></div>
+
+            <div class="btn-social">Continue with Google (bientôt disponible)</div>
+            <div class="btn-social">Continue with Apple (bientôt disponible)</div>
+        </form>
+
+        <div class="signup-link">
+            Pas encore de compte ? <a href="">Inscrivez-vous</a>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

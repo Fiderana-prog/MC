@@ -1,0 +1,224 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Email Dashboard - MC Flow-IA</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            primary: '#0ea5e9',
+            primaryDark: '#0369a1',
+            accent: '#8b5cf6',
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans">
+
+  <!-- Sidebar -->
+  <aside class="fixed inset-y-0 left-0 w-64 bg-white border-r border-gray-200 shadow-sm z-30">
+    <div class="p-6 border-b border-gray-200">
+      <a href="/" class="block transition hover:opacity-90 duration-200">
+        <img 
+          src="{% static 'dashboard/images/MC FLOW-IA LOGO.png' %}" 
+          alt="MC Flow-IA" 
+          class="h-10 w-auto object-contain"
+          loading="lazy"
+        />
+      </a>
+      <p class="text-sm text-gray-500 mt-2">
+        Gestion des emails
+      </p>
+    </div>
+
+    <nav class="p-4 mt-4">
+      <ul class="space-y-1">
+        <li>
+          <a href="#" class="flex items-center px-4 py-3 text-gray-700 bg-gray-100 rounded-lg font-medium">
+            <span class="w-5 h-5 mr-3">📊</span>
+            Dashboard
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'logout' %}" class="flex items-center px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg transition">
+            <span class="w-5 h-5 mr-3">🚪</span>
+            Déconnexion
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Main content -->
+  <main class="ml-64 p-8">
+
+    <!-- Header -->
+    <header class="flex justify-between items-center mb-10">
+      <div>
+        <h2 class="text-3xl font-bold text-gray-800">Tableau de bord Emails</h2>
+        <p class="text-gray-500 mt-1">Vue d'ensemble – Mise à jour il y a 3 minutes</p>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="text-right">
+          <p class="font-medium">Fiderana</p>
+          <p class="text-sm text-gray-500">admin@flow-ia.com</p>
+        </div>
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-primaryDark flex items-center justify-center text-white font-bold">
+          F
+        </div>
+      </div>
+    </header>
+
+    <!-- Stats cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+      <!-- Total mails traités -->
+      <div class="bg-white rounded-2xl shadow border border-gray-100 p-6 hover:shadow-lg transition">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-700">Mails traités</h3>
+          <span class="text-2xl">📬</span>
+        </div>
+        <p id="total-mails" class="text-4xl font-bold text-gray-900">0</p>
+        <p class="text-sm text-green-600 mt-2 flex items-center gap-1">
+          <span id="total-change">↑ 0%</span>
+          <span class="text-gray-500">vs mois dernier</span>
+        </p>important
+      </div>
+
+      <!-- Mails importants -->
+      <div class="bg-white rounded-2xl shadow border border-gray-100 p-6 hover:shadow-lg transition">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-700">Mails importants</h3>
+          <span class="text-2xl">⭐</span>
+        </div>
+        <p id="important-mails" class="text-4xl font-bold text-indigo-600">0</p>
+        <p class="text-sm text-indigo-600 mt-2 flex items-center gap-1">
+          <span id="important-percent">0%</span>
+          <span class="text-gray-500">du total</span>
+        </p>
+      </div>
+
+      <!-- Mails non importants -->
+      <div class="bg-white rounded-2xl shadow border border-gray-100 p-6 hover:shadow-lg transition">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-semibold text-gray-700">Non importants</h3>
+          <span class="text-2xl">📄</span>
+        </div>
+        <p id="non-important-mails" class="text-4xl font-bold text-gray-600">0</p>
+        <p class="text-sm text-gray-600 mt-2 flex items-center gap-1">
+          <span id="non-important-percent">0%</span>
+          <span class="text-gray-500">du total</span>
+        </p>
+      </div>
+    </div>
+
+  </main>
+
+<!-- Script pour récupérer les stats depuis n8n -->
+<script>
+async function fetchEmailStats() {
+  try {
+    const response = await fetch(
+      'https://automatika.viewdns.net/webhook/f6174d6a-1b24-4e24-9dcf-5a7b30663f30'
+    );
+
+    if (!response.ok) {
+      throw new Error(`Erreur HTTP : ${response.status}`);
+    }
+
+    const dataArray = await response.json();
+    console.log("Données reçues du webhook :", dataArray);
+
+    
+    const data = dataArray[0] || {};  
+
+
+    const total = data.total || 0;
+    const important = data.important || 0;
+    const nonImportant = data.non_important || 0;
+
+    document.getElementById("total-mails").textContent = total;
+    document.getElementById("important-mails").textContent = important;
+    document.getElementById("non-important-mails").textContent = nonImportant;
+
+    if (total > 0) {
+      document.getElementById("important-percent").textContent =
+        ((important / total) * 100).toFixed(1) + "%";
+
+      document.getElementById("non-important-percent").textContent =
+        ((nonImportant / total) * 100).toFixed(1) + "%";
+    } else {
+      document.getElementById("important-percent").textContent = "0%";
+      document.getElementById("non-important-percent").textContent = "0%";
+    }
+
+    if (data.change_total !== undefined) {
+      const change = data.change_total;
+      document.getElementById("total-change").textContent =
+        (change > 0 ? "↑ " : "↓ ") + Math.abs(change) + "% vs mois dernier";
+    } else {
+      document.getElementById("total-change").textContent = "—";
+    }
+
+    if (data.latest && Array.isArray(data.latest)) {
+      const tbody = document.getElementById("latest-mails-body");
+
+      // Vérifie que l'élément existe dans le HTML (ajoute-le si besoin)
+      if (tbody) {
+        tbody.innerHTML = ""; // On vide le tableau avant
+
+        data.latest.forEach(mail => {
+          const row = document.createElement("tr");
+          row.className = "hover:bg-gray-50 border-b border-gray-100";
+
+          row.innerHTML = `
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${mail.sender || "—"}</td>
+            <td class="px-6 py-4 font-medium text-gray-900">${mail.subject || "Sans objet"}</td>
+            <td class="px-6 py-4">
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                mail.status === "Important" || mail.important
+                  ? "bg-indigo-100 text-indigo-800"
+                  : "bg-gray-100 text-gray-600"
+              }">
+                ${mail.status || (mail.important ? "Important" : "Normal")}
+              </span>
+            </td>
+            <td class="px-6 py-4 text-sm text-gray-500">${mail.date || "—"}</td>
+            <td class="px-6 py-4 text-sm ${
+              mail.status === "Traité" ? "text-green-600" : "text-gray-600"
+            }">
+              ${mail.status || "—"}
+            </td>
+          `;
+
+          tbody.appendChild(row);
+        });
+      } else {
+        console.warn("L'élément #latest-mails-body n'existe pas dans le HTML");
+      }
+    }
+
+  } catch (error) {
+    console.error("Erreur lors de la récupération des stats :", error);
+    // Optionnel : afficher un message d'erreur visible sur la page
+    document.getElementById("total-mails").textContent = "—";
+    document.getElementById("important-mails").textContent = "—";
+    document.getElementById("non-important-mails").textContent = "—";
+  }
+}
+
+window.addEventListener("DOMContentLoaded", fetchEmailStats);
+</script>
+
+</body>
+</html>
