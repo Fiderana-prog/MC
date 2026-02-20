@@ -138,7 +138,7 @@
   <script>
     async function fetchEmailStats() {
       try {
-        const res = await fetch('https://automatika.viewdns.net/webhook-test/f6174d6a-1b24-4e24-9dcf-5a7b30663f30');
+        const res = await fetch('https://automatika.viewdns.net/webhook/f6174d6a-1b24-4e24-9dcf-5a7b30663f30');
 
         if (!res.ok) {
           throw new Error(`HTTP ${res.status}`);
