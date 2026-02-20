@@ -75,7 +75,7 @@
           Tableau de bord Emails
         </h1>
         <p class="mt-1 text-gray-500">
-          Vue d’ensemble – Mise à jour il y a 3 minutes
+          Vue d’ensemble – <span id="last-update">Mise à jour en cours...</span>
         </p>
       </div>
 
@@ -100,7 +100,7 @@
         </div>
         <p id="total-mails" class="text-4xl font-bold text-gray-900">—</p>
         <p class="mt-2 flex items-center gap-1 text-sm">
-          <span id="total-change" class="text-green-600">↑ 0%</span>
+          <span id="total-change" class="text-green-600">—</span>
           <span class="text-gray-500">vs mois dernier</span>
         </p>
       </div>
@@ -113,7 +113,7 @@
         </div>
         <p id="important-mails" class="text-4xl font-bold text-indigo-600">—</p>
         <p class="mt-2 flex items-center gap-1 text-sm">
-          <span id="important-percent" class="text-indigo-600">0%</span>
+          <span id="important-percent" class="text-indigo-600">—</span>
           <span class="text-gray-500">du total</span>
         </p>
       </div>
@@ -126,26 +126,47 @@
         </div>
         <p id="non-important-mails" class="text-4xl font-bold text-gray-600">—</p>
         <p class="mt-2 flex items-center gap-1 text-sm">
-          <span id="non-important-percent" class="text-gray-600">0%</span>
+          <span id="non-important-percent" class="text-gray-600">—</span>
           <span class="text-gray-500">du total</span>
         </p>
       </div>
     </div>
 
-    <!-- (optionnel) → tu pourras remettre ici le tableau des derniers mails quand tu seras prêt -->
+    <!-- Message de chargement / erreur -->
+    <div id="status-message" class="mt-8 text-center text-gray-500 hidden">
+      
+    </div>
+
   </main>
 
   <script>
+    const webhookUrl = 'https://automatika.viewdns.net/webhook/f6174d6a-1b24-4e24-9dcf-5a7b30663f30';
+
     async function fetchEmailStats() {
+      const statusEl = document.getElementById('status-message');
+      statusEl.classList.remove('hidden');
+      //statusEl.textContent = 'Chargement des statistiques...';
+
       try {
-        const res = await fetch('https://automatika.viewdns.net/webhook/f6174d6a-1b24-4e24-9dcf-5a7b30663f30');
+        const res = await fetch(webhookUrl, {
+          cache: 'no-cache'  
+        });
 
         if (!res.ok) {
-          throw new Error(`HTTP ${res.status}`);
+          throw new Error(`Erreur HTTP ${res.status}`);
         }
 
-        const dataArray = await res.json();
-        const data = dataArray?.[0] ?? {};
+        const rawData = await res.json();
+
+        // Gestion robuste : objet direct OU tableau d'objets
+        let data;
+        if (Array.isArray(rawData)) {
+          data = rawData[0] ?? {};         
+        } else if (typeof rawData === 'object' && rawData !== null) {
+          data = rawData;                    
+        } else {
+          data = {};
+        }
 
         const total        = data.total ?? 0;
         const important    = data.important ?? 0;
@@ -159,31 +180,37 @@
         // Pourcentages
         if (total > 0) {
           document.getElementById('important-percent').textContent =
-            ((important / total) * 100).toFixed(1) + '%';
+            ((important / total) * 100).toFixed(1) + ' %';
           document.getElementById('non-important-percent').textContent =
-            ((nonImportant / total) * 100).toFixed(1) + '%';
+            ((nonImportant / total) * 100).toFixed(1) + ' %';
+        } else {
+          document.getElementById('important-percent').textContent = '—';
+          document.getElementById('non-important-percent').textContent = '—';
         }
 
-        // Variation
-        const change = data.change_total;
-        if (change !== undefined) {
-          const sign = change > 0 ? '↑' : (change < 0 ? '↓' : '');
-          document.getElementById('total-change').textContent =
-            `${sign} ${Math.abs(change)}% vs mois dernier`;
-          document.getElementById('total-change').className =
-            change > 0 ? 'text-green-600' : (change < 0 ? 'text-red-600' : 'text-gray-500');
-        }
+
+        // Mise à jour de la date
+        const now = new Date();
+        document.getElementById('last-update').textContent = 
+          `Mis à jour à ${now.toLocaleTimeString('fr-FR', {hour: '2-digit', minute:'2-digit'})}`;
+
+        statusEl.classList.add('hidden');
 
       } catch (err) {
-        console.error('Erreur fetch stats:', err);
-        document.getElementById('total-mails').textContent         = '—';
-        document.getElementById('important-mails').textContent     = '—';
-        document.getElementById('non-important-mails').textContent = '—';
+        console.error('Erreur lors de la récupération des stats :', err);
+        statusEl.textContent = 'Impossible de charger les resultats.';
+        statusEl.classList.remove('hidden', 'text-gray-500');
+        statusEl.classList.add('text-red-600', 'font-medium');
       }
     }
 
-    // Lancement au chargement
-    document.addEventListener('DOMContentLoaded', fetchEmailStats);
+    // Chargement initial
+    document.addEventListener('DOMContentLoaded', () => {
+      fetchEmailStats();
+      
+  
+      setInterval(fetchEmailStats, 60000);
+    });
   </script>
 
 </body>
