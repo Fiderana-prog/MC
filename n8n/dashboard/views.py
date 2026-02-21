@@ -13,7 +13,7 @@ def login_view(request):
             user = form.get_user()
             login(request, user)
 
-            
+
             trigger_workflow()
 
             return redirect('landing_page')
@@ -33,7 +33,7 @@ def dashboard(request):
 def trigger_workflow():
     url = "https://automatika.viewdns.net/webhook/f6174d6a-1b24-4e24-9dcf-5a7b30663f30"
     try:
-        res = requests.get(url, timeout=10)  # <- changer POST en GET
+        res = requests.get(url, timeout=10)  
         print("Workflow déclenché :", res.status_code)
     except Exception as e:
         print("Erreur déclenchement workflow :", e)
