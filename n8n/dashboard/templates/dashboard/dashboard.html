@@ -82,7 +82,6 @@
       <div class="flex items-center gap-3">
         <div class="text-right">
           <p class="font-medium">Fiderana</p>
-          <p class="text-sm text-gray-500">admin@flow-ia.com</p>
         </div>
         <div class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primaryDark font-bold text-white">
           F
@@ -91,7 +90,7 @@
     </header>
 
     <!-- Stats cards -->
-    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
       <!-- Total -->
       <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow transition hover:shadow-lg">
         <div class="mb-4 flex items-center justify-between">
@@ -130,6 +129,19 @@
           <span class="text-gray-500">du total</span>
         </p>
       </div>
+
+      <!-- Événements créés dans Google Calendar (NOUVEAU) -->
+      <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow transition hover:shadow-lg">
+        <div class="mb-4 flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-gray-700">Événements créés</h3>
+          <span class="text-2xl">📅</span>
+        </div>
+        <p id="calendar-events" class="text-4xl font-bold text-emerald-600">—</p>
+        <p class="mt-2 flex items-center gap-1 text-sm">
+          <span class="text-emerald-600">—</span>
+          <span class="text-gray-500">dans Google Calendar</span>
+        </p>
+      </div>
     </div>
 
     <!-- Message de chargement / erreur -->
@@ -145,11 +157,10 @@
     async function fetchEmailStats() {
       const statusEl = document.getElementById('status-message');
       statusEl.classList.remove('hidden');
-      //statusEl.textContent = 'Chargement des statistiques...';
 
       try {
         const res = await fetch(webhookUrl, {
-          cache: 'no-cache'  
+          cache: 'no-cache'
         });
 
         if (!res.ok) {
@@ -168,16 +179,18 @@
           data = {};
         }
 
-        const total        = data.total ?? 0;
-        const important    = data.important ?? 0;
-        const nonImportant = data.non_important ?? 0;
+        const total        = data.total_emails ?? 0;
+        const important    = data.emails_importants ?? 0;
+        const nonImportant = data.emails_non_importants ?? 0;
+        const calendarEvents = data.evenements_crees ?? 0;
 
         // Mise à jour des compteurs
         document.getElementById('total-mails').textContent         = total;
         document.getElementById('important-mails').textContent     = important;
         document.getElementById('non-important-mails').textContent = nonImportant;
+        document.getElementById('calendar-events').textContent     = calendarEvents;
 
-        // Pourcentages
+        // Pourcentages (importants et non importants)
         if (total > 0) {
           document.getElementById('important-percent').textContent =
             ((important / total) * 100).toFixed(1) + ' %';
@@ -188,7 +201,6 @@
           document.getElementById('non-important-percent').textContent = '—';
         }
 
-
         // Mise à jour de la date
         const now = new Date();
         document.getElementById('last-update').textContent = 
@@ -198,7 +210,7 @@
 
       } catch (err) {
         console.error('Erreur lors de la récupération des stats :', err);
-        statusEl.textContent = 'Impossible de charger les resultats.';
+        statusEl.textContent = 'Impossible de charger les résultats.';
         statusEl.classList.remove('hidden', 'text-gray-500');
         statusEl.classList.add('text-red-600', 'font-medium');
       }
@@ -208,7 +220,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       fetchEmailStats();
       
-  
+      // Rafraîchissement automatique toutes les 5 minutes (300000 ms)
       setInterval(fetchEmailStats, 300000);
     });
   </script>
